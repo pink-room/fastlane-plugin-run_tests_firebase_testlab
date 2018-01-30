@@ -18,6 +18,9 @@ module Fastlane
         else
           @client_secret_file = params[:gcloud_service_key_file]
         end
+
+        UI.message("Set Google Cloud target project.")
+        Action.sh("gcloud config set project #{params[:project_id]}")
       end
 
       def self.description
