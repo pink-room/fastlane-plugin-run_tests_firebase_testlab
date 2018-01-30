@@ -34,6 +34,9 @@ module Fastlane
                   "--timeout #{params[:timeout]} "\
                   "#{params[:extra_options]} "\
                   "2>&1 | tee #{@test_console_output_file}")
+
+        UI.message("Create firebase directory (if not exists) to store test results.")
+        FileUtils.mkdir_p(params[:output_dir])
       end
 
       def self.description
