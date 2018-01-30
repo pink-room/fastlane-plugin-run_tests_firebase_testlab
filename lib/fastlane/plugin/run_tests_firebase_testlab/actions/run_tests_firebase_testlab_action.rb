@@ -21,6 +21,9 @@ module Fastlane
 
         UI.message("Set Google Cloud target project.")
         Action.sh("gcloud config set project #{params[:project_id]}")
+
+        UI.message("Authenticate with Google Cloud.")
+        Action.sh("gcloud auth activate-service-account --key-file #{@client_secret_file}")
       end
 
       def self.description
