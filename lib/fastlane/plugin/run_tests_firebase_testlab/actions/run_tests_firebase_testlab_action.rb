@@ -3,9 +3,21 @@ require_relative '../helper/run_tests_firebase_testlab_helper'
 
 module Fastlane
   module Actions
+
     class RunTestsFirebaseTestlabAction < Action
+      @client_secret_file = "client-secret.json"
+
       def self.run(params)
-        UI.message("The run_tests_firebase_testlab plugin is working!")
+        UI.message("Starting run_instrumentation_tests_in_firebase_testlab plugin...")
+
+        if (params[:gcloud_service_key_file].nil?)
+          UI.message("Save Google Cloud credentials.")
+          File.open(@client_secret_file, 'w') do |file|
+            file.write(ENV["GCLOUD_SERVICE_KEY"])
+          end
+        else
+          @client_secret_file = params[:gcloud_service_key_file]
+        end
       end
 
       def self.description
