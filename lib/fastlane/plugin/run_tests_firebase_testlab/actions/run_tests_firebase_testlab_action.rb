@@ -13,16 +13,26 @@ module Fastlane
       end
 
       def self.authors
-        ["Bruno Correia"]
-      end
-
-      def self.return_value
-        # If your method provides a return value, you can describe here what it does
+        ["bffcorreia"]
       end
 
       def self.details
-        # Optional:
-        "Runs Android tests in Firebase testlab."
+        [
+          "Authenticates with Google Cloud.",
+          "Runs tests in Firebase testlab.",
+          "Fetches the results to a local directory.",
+          "Deletes the results from firebase bucket if wanted."
+        ].join("\n")
+      end
+
+      def self.output
+        [
+          ['bugreport.txt', 'A bugreport of the app.'],
+          ['instrumentation.results', 'The results of the instrumentation tests.'],
+          ['logcat', 'Logs from logcat.'],
+          ['test_result_0.xml', 'A xml file that contains all the tests.'],
+          ['video.mp4', 'A video of the tests.']
+        ]
       end
 
       def self.available_options
@@ -36,11 +46,22 @@ module Fastlane
       end
 
       def self.is_supported?(platform)
-        # Adjust this if your plugin only works for a particular platform (iOS vs. Android, for example)
-        # See: https://docs.fastlane.tools/advanced/#control-configuration-by-lane-and-by-platform
-        #
-        # [:ios, :mac, :android].include?(platform)
-        true
+        platform == :android
+      end
+
+      def self.example_code
+        [
+          'run_tests_firebase_testlab(
+              project_id: "your-firebase-project-id",
+              model: "Nexus6P",
+              version: "27",
+              delete_firebase_files: true
+          )'
+        ]
+      end
+
+      def self.category
+        :testing
       end
     end
   end
