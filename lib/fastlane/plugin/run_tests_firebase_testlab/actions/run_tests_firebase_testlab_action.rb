@@ -43,6 +43,9 @@ module Fastlane
           params[:bucket_url] = scrape_bucket_url
           UI.message("bucket: #{params[:bucket_url]}")
         end
+
+        UI.message("Downloading instrumentation test results from Firebase TestLab...")
+        Action.sh("gsutil -m cp -r #{params[:bucket_url]} #{params[:output_dir]}/")
       end
 
       def self.description
