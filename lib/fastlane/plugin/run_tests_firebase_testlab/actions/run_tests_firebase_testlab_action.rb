@@ -24,6 +24,16 @@ module Fastlane
 
         UI.message("Authenticate with Google Cloud.")
         Action.sh("gcloud auth activate-service-account --key-file #{@client_secret_file}")
+
+        UI.message("Running instrumentation tests in Firebase TestLab...")
+        Action.sh("gcloud firebase test android run "\
+                  "--type instrumentation "\
+                  "--app #{params[:app_apk]} "\
+                  "--test #{params[:android_test_apk]} "\
+                  "--device model=#{params[:model]},version=#{params[:version]},locale=#{params[:locale]},orientation=#{params[:orientation]} "\
+                  "--timeout #{params[:timeout]} "\
+                  "#{params[:extra_options]} "\
+                  "2>&1 | tee #{@test_console_output_file}")
       end
 
       def self.description
