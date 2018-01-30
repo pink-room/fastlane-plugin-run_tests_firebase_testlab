@@ -37,6 +37,12 @@ module Fastlane
 
         UI.message("Create firebase directory (if not exists) to store test results.")
         FileUtils.mkdir_p(params[:output_dir])
+
+        if (params[:bucket_url].nil?)
+          UI.message("Parse firebase bucket url.")
+          params[:bucket_url] = scrape_bucket_url
+          UI.message("bucket: #{params[:bucket_url]}")
+        end
       end
 
       def self.description
@@ -163,6 +169,19 @@ module Fastlane
 
       def self.category
         :testing
+      end
+
+      private
+
+      def self.scrape_bucket_url
+        File.open(@test_console_output_file).each do |line|
+          url = line.scan(/\[(.*)\]/).last&.first
+          if (not url.nil? and (not url.empty? and url.include?("test-lab-")))
+            splitted_url = url.split("/")
+            length = splitted_url.length
+            return "gs://#{splitted_url[length - 2]}/#{splitted_url[length - 1]}"
+          end
+        end
       end
     end
   end
