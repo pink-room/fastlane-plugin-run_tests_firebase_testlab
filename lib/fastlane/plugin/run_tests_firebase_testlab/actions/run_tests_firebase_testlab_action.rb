@@ -46,6 +46,11 @@ module Fastlane
 
         UI.message("Downloading instrumentation test results from Firebase TestLab...")
         Action.sh("gsutil -m cp -r #{params[:bucket_url]} #{params[:output_dir]}/")
+
+        if (params[:delete_firebase_files])
+          UI.message("Deleting files from firebase storage...")
+          Action.sh("gsutil rm -r #{params[:bucket_url]}")
+        end
       end
 
       def self.description
