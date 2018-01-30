@@ -9,7 +9,7 @@ module Fastlane
       @test_console_output_file = "instrumentation_output.txt"
 
       def self.run(params)
-        UI.message("Starting run_instrumentation_tests_in_firebase_testlab plugin...")
+        UI.message("Starting run_tests_firebase_testlab plugin...")
 
         if (params[:gcloud_service_key_file].nil?)
           UI.message("Save Google Cloud credentials.")
