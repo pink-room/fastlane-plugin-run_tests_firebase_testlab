@@ -184,7 +184,7 @@ module Fastlane
 
       def self.scrape_bucket_url
         File.open(@test_console_output_file).each do |line|
-          url = line.scan(/\[(.*)\]/).try(last).try(first)
+          url = line.scan(/\[(.*)\]/)&.last.first
           if (not url.nil? and (not url.empty? and url.include?("test-lab-")))
             splitted_url = url.split("/")
             length = splitted_url.length
