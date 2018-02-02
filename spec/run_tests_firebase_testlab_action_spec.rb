@@ -67,14 +67,14 @@ describe Fastlane::Actions::RunTestsFirebaseTestlabAction do
     end
 
     context 'when test optional params passed' do
-      before { generate_params({ app_apk: "app.apk", android_test_apk: "android_test.ak", model: "Pixel", version: "22", locale: "pt_PT", orientation: "landscape", timeout: "10m", extra_options: "--format=\"json\"" }) }
+      before { generate_params({ app_apk: "app.apk", android_test_apk: "android_test.apk", model: "Pixel", version: "22", locale: "pt_PT", orientation: "landscape", timeout: "10m", extra_options: "--format=\"json\"" }) }
 
       it 'run tests with passed app apk' do
         expect_action_sh(4, Fastlane::Commands.run_tests, "--app app.apk")
       end
 
       it 'run tests with passed android test apk' do
-        expect_action_sh(4, Fastlane::Commands.run_tests, "--app app.apk")
+        expect_action_sh(4, Fastlane::Commands.run_tests, "--test android_test.apk")
       end
 
       it 'run tests with passed model' do
