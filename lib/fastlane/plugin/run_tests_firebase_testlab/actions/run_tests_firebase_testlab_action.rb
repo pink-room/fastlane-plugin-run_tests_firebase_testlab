@@ -1,6 +1,3 @@
-require 'fastlane/action'
-require_relative '../helper/run_tests_firebase_testlab_helper'
-
 module Fastlane
   module Actions
 
@@ -21,13 +18,13 @@ module Fastlane
         end
 
         UI.message("Set Google Cloud target project.")
-        Action.sh("gcloud config set project #{params[:project_id]}")
+        Action.sh("#{Commands.config} #{params[:project_id]}")
 
         UI.message("Authenticate with Google Cloud.")
-        Action.sh("gcloud auth activate-service-account --key-file #{@client_secret_file}")
+        Action.sh("#{Commands.auth} --key-file #{@client_secret_file}")
 
         UI.message("Running instrumentation tests in Firebase TestLab...")
-        Action.sh("gcloud firebase test android run "\
+        Action.sh("#{Commands.run_tests} "\
                   "--type instrumentation "\
                   "--app #{params[:app_apk]} "\
                   "--test #{params[:android_test_apk]} "\
@@ -46,11 +43,11 @@ module Fastlane
         end
 
         UI.message("Downloading instrumentation test results from Firebase TestLab...")
-        Action.sh("gsutil -m cp -r #{params[:bucket_url]} #{params[:output_dir]}/")
+        Action.sh("#{Commands.download_results} #{params[:bucket_url]} #{params[:output_dir]}/")
 
         if (params[:delete_firebase_files])
           UI.message("Deleting files from firebase storage...")
-          Action.sh("gsutil rm -r #{params[:bucket_url]}")
+          Action.sh("#{Commands.delete_resuls} #{params[:bucket_url]}")
         end
       end
 
