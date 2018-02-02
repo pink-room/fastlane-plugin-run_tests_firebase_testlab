@@ -117,7 +117,7 @@ describe Fastlane::Actions::RunTestsFirebaseTestlabAction do
     end
 
     context 'when bucket url not passed' do
-      it 'download results form url parsed from test command output' do
+      it 'download results from url parsed from test command output' do
         generate_params
         expect_action_sh(4, Fastlane::Commands.download_results, "gs://test-lab-s22/s22")
       end
