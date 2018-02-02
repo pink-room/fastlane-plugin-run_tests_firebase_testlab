@@ -25,21 +25,21 @@ describe Fastlane::Actions::RunTestsFirebaseTestlabAction do
       expect_action_sh(4, Fastlane::Commands.config, "project-id")
     end
 
-    context 'when no gcloud service file passed' do
+    context 'when no gcloud service file given' do
       it 'authenticates with created file' do
         generate_params
         expect_action_sh(4, Fastlane::Commands.auth, Fastlane::Actions::RunTestsFirebaseTestlabAction.client_secret_file)
       end
     end
 
-    context 'when gcloud service file passed' do
-      it 'authenticates with file passed' do
+    context 'when gcloud service file given' do
+      it 'authenticates with the given file' do
         generate_params({ gcloud_service_key_file: "keys.json" })
         expect_action_sh(4, Fastlane::Commands.auth, "keys.json")
       end
     end
 
-    context 'when no optional test params passed' do
+    context 'when no optional test params given' do
       it 'run tests with default app apk' do
         generate_params
         expect_action_sh(4, Fastlane::Commands.run_tests, "--app #{@params[:app_apk]}")
@@ -66,65 +66,65 @@ describe Fastlane::Actions::RunTestsFirebaseTestlabAction do
       end
     end
 
-    context 'when test optional params passed' do
+    context 'when test optional params given' do
       before { generate_params({ app_apk: "app.apk", android_test_apk: "android_test.apk", model: "Pixel", version: "22", locale: "pt_PT", orientation: "landscape", timeout: "10m", extra_options: "--format=\"json\"" }) }
 
-      it 'run tests with passed app apk' do
+      it 'run tests with the given app apk' do
         expect_action_sh(4, Fastlane::Commands.run_tests, "--app app.apk")
       end
 
-      it 'run tests with passed android test apk' do
+      it 'run tests with the given android test apk' do
         expect_action_sh(4, Fastlane::Commands.run_tests, "--test android_test.apk")
       end
 
-      it 'run tests with passed model' do
+      it 'run tests with the given model' do
         expect_action_sh(4, Fastlane::Commands.run_tests, "model=Pixel")
       end
 
-      it 'run tests with passed version' do
+      it 'run tests with the given version' do
         expect_action_sh(4, Fastlane::Commands.run_tests, "version=22")
       end
 
-      it 'run tests with passed locale' do
+      it 'run tests with the given locale' do
         expect_action_sh(4, Fastlane::Commands.run_tests, "locale=pt_PT")
       end
 
-      it 'run tests with passed orientation' do
+      it 'run tests with the given orientation' do
         expect_action_sh(4, Fastlane::Commands.run_tests, "orientation=landscape")
       end
 
-      it 'run tests with passed timeout' do
+      it 'run tests with the given timeout' do
         expect_action_sh(4, Fastlane::Commands.run_tests, "--timeout 10m")
       end
 
-      it 'run tests with passed extra options' do
+      it 'run tests with the given extra options' do
         expect_action_sh(4, Fastlane::Commands.run_tests, "--format=\"json\"")
       end
     end
 
-    context 'when no output dir passed' do
+    context 'when no output dir given' do
       it 'creates firebase dir' do
         generate_params
         expect(FileUtils).to receive(:mkdir_p).with("firebase")
       end
     end
 
-    context 'when output dir passed' do
-      it 'creates passed dir' do
+    context 'when output dir given' do
+      it 'creates the given dir' do
         generate_params({ output_dir: "output" })
         expect(FileUtils).to receive(:mkdir_p).with("output")
       end
     end
 
-    context 'when bucket url not passed' do
+    context 'when bucket url not given' do
       it 'download results from url parsed from test command output' do
         generate_params
         expect_action_sh(4, Fastlane::Commands.download_results, "gs://test-lab-s22/s22")
       end
     end
 
-    context 'when bucket url passed' do
-      it 'downloads files from passed url' do
+    context 'when bucket url given' do
+      it 'downloads files from given url' do
         generate_params({ bucket_url: "gs://test-lab-1/1" })
         expect_action_sh(4, Fastlane::Commands.download_results, "gs://test-lab-1/1")
       end
