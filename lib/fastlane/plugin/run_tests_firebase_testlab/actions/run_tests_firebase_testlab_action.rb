@@ -5,6 +5,14 @@ module Fastlane
       @client_secret_file = "client-secret.json"
       @test_console_output_file = "instrumentation_output.txt"
 
+      def self.client_secret_file
+        @client_secret_file
+      end
+
+      def self.test_console_output_file
+        @test_console_output_file
+      end
+
       def self.run(params)
         UI.message("Starting run_tests_firebase_testlab plugin...")
 

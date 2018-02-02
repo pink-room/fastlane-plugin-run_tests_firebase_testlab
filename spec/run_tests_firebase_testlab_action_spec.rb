@@ -1,9 +1,165 @@
 describe Fastlane::Actions::RunTestsFirebaseTestlabAction do
   describe '#run' do
-    it 'prints a message' do
-      expect(Fastlane::UI).to receive(:message).with("The run_tests_firebase_testlab plugin is working!")
+    let(:available_options) { Fastlane::Actions::RunTestsFirebaseTestlabAction.available_options }
+    let(:test_console_output) { "Raw results will be stored in your GCS bucket at [https://console.developers.google.com/storage/browser/test-lab-s22/s22/]" }
+    let(:test_console_output_file) { "instrumentation_output.txt" }
+    let(:client_secret_file) { double("secret") }
 
-      Fastlane::Actions::RunTestsFirebaseTestlabAction.run(nil)
+    before :each do
+      allow(Fastlane::UI).to receive(:message)
+
+      File.open(test_console_output_file, 'w') { |f| f.write(test_console_output) }
+      allow(File).to receive(:open).with(Fastlane::Actions::RunTestsFirebaseTestlabAction.test_console_output_file).and_return(File.open(test_console_output_file))
+
+      allow(File).to receive(:open).with(Fastlane::Actions::RunTestsFirebaseTestlabAction.client_secret_file, 'w').and_return(client_secret_file)
+    end
+
+    after :each do
+      Fastlane::Actions::RunTestsFirebaseTestlabAction.run(@params)
+      File.delete(Fastlane::Actions::RunTestsFirebaseTestlabAction.client_secret_file) if File.file?(Fastlane::Actions::RunTestsFirebaseTestlabAction.client_secret_file)
+      File.delete(test_console_output_file)
+    end
+
+    it 'configures project' do
+      generate_params
+      expect_action_sh(4, Fastlane::Commands.config, "project-id")
+    end
+
+    context 'when no gcloud service file passed' do
+      it 'authenticates with created file' do
+        generate_params
+        expect_action_sh(4, Fastlane::Commands.auth, Fastlane::Actions::RunTestsFirebaseTestlabAction.client_secret_file)
+      end
+    end
+
+    context 'when gcloud service file passed' do
+      it 'authenticates with file passed' do
+        generate_params({ gcloud_service_key_file: "keys.json" })
+        expect_action_sh(4, Fastlane::Commands.auth, "keys.json")
+      end
+    end
+
+    context 'when no optional test params passed' do
+      it 'run tests with default app apk' do
+        generate_params
+        expect_action_sh(4, Fastlane::Commands.run_tests, "--app #{@params[:app_apk]}")
+      end
+
+      it 'run tests with default android test apk' do
+        generate_params
+        expect_action_sh(4, Fastlane::Commands.run_tests, "--test #{@params[:android_test_apk]}")
+      end
+
+      it 'run tests with default locale' do
+        generate_params
+        expect_action_sh(4, Fastlane::Commands.run_tests, "locale=#{@params[:locale]}")
+      end
+
+      it 'run tests with default orientation' do
+        generate_params
+        expect_action_sh(4, Fastlane::Commands.run_tests, "orientation=#{@params[:orientation]}")
+      end
+
+      it 'run tests with default timeout' do
+        generate_params
+        expect_action_sh(4, Fastlane::Commands.run_tests, "--timeout #{@params[:timeout]}")
+      end
+    end
+
+    context 'when test optional params passed' do
+      before { generate_params({ app_apk: "app.apk", android_test_apk: "android_test.ak", model: "Pixel", version: "22", locale: "pt_PT", orientation: "landscape", timeout: "10m", extra_options: "--format=\"json\"" }) }
+
+      it 'run tests with passed app apk' do
+        expect_action_sh(4, Fastlane::Commands.run_tests, "--app app.apk")
+      end
+
+      it 'run tests with passed android test apk' do
+        expect_action_sh(4, Fastlane::Commands.run_tests, "--app app.apk")
+      end
+
+      it 'run tests with passed model' do
+        expect_action_sh(4, Fastlane::Commands.run_tests, "model=Pixel")
+      end
+
+      it 'run tests with passed version' do
+        expect_action_sh(4, Fastlane::Commands.run_tests, "version=22")
+      end
+
+      it 'run tests with passed locale' do
+        expect_action_sh(4, Fastlane::Commands.run_tests, "locale=pt_PT")
+      end
+
+      it 'run tests with passed orientation' do
+        expect_action_sh(4, Fastlane::Commands.run_tests, "orientation=landscape")
+      end
+
+      it 'run tests with passed timeout' do
+        expect_action_sh(4, Fastlane::Commands.run_tests, "--timeout 10m")
+      end
+
+      it 'run tests with passed extra options' do
+        expect_action_sh(4, Fastlane::Commands.run_tests, "--format=\"json\"")
+      end
+    end
+
+    context 'when no output dir passed' do
+      it 'creates firebase dir' do
+        generate_params
+        expect(FileUtils).to receive(:mkdir_p).with("firebase")
+      end
+    end
+
+    context 'when output dir passed' do
+      it 'creates passed dir' do
+        generate_params({ output_dir: "output" })
+        expect(FileUtils).to receive(:mkdir_p).with("output")
+      end
+    end
+
+    context 'when bucket url not passed' do
+      it 'download results form url parsed from test command output' do
+        generate_params
+        expect_action_sh(4, Fastlane::Commands.download_results, "gs://test-lab-s22/s22")
+      end
+    end
+
+    context 'when bucket url passed' do
+      it 'downloads files from passed url' do
+        generate_params({ bucket_url: "gs://test-lab-1/1" })
+        expect_action_sh(4, Fastlane::Commands.download_results, "gs://test-lab-1/1")
+      end
+    end
+
+    context 'when delete firebase files' do
+      it 'deletes firebase files' do
+        generate_params({ delete_firebase_files: true })
+        expect_action_sh(5, Fastlane::Commands.delete_resuls, "gs://test-lab-s22/s22")
+      end
+    end
+
+    context 'when do not delete firebase files' do
+      it 'do not delete firebase files' do
+        generate_params
+        expect_action_sh_not_to(4, Fastlane::Commands.delete_resuls)
+      end
+    end
+
+    def generate_params(new_params = {})
+      needed_params = { project_id: "project-id", model: "Nexus6P", version: "27" }
+      needed_params = needed_params.merge(new_params)
+      @params = FastlaneCore::Configuration.create(available_options, needed_params)
+    end
+
+    def expect_action_sh(exactly, command, includes)
+      expect(Fastlane::Action).to receive(:sh).exactly(exactly) do |c|
+        expect(c).to include(includes) if c.start_with?(command)
+      end
+    end
+
+    def expect_action_sh_not_to(exactly, command)
+      expect(Fastlane::Action).to receive(:sh).exactly(exactly) do |c|
+        expect(c).not_to(include(command))
+      end
     end
   end
 end
