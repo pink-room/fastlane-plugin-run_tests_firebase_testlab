@@ -107,7 +107,7 @@ module Fastlane
                                        is_string: true,
                                        optional: true,
                                        default_value: "app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk"),
-          FastlaneCore::ConfigItem.new(key: locale,
+          FastlaneCore::ConfigItem.new(key: :locale,
                                        env_name: "LOCALE",
                                        description: "The locale to test against. Default: en_US",
                                        is_string: true,
