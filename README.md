@@ -1,6 +1,8 @@
 # run_tests_firebase_testlab plugin
 
 [![fastlane Plugin Badge](https://rawcdn.githack.com/fastlane/fastlane/master/fastlane/assets/plugin-badge.svg)](https://rubygems.org/gems/fastlane-plugin-run_tests_firebase_testlab)
+[![Build
+Status](https://travis-ci.org/pink-room/fastlane-plugin-run_tests_firebase_testlab.svg?branch=master)](https://travis-ci.org/pink-room/fastlane-plugin-run_tests_firebase_testlab)
 
 ## Getting Started
 
