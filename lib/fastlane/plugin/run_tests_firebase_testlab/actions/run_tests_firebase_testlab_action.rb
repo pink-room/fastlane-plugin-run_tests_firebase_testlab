@@ -1,9 +1,12 @@
 module Fastlane
   module Actions
     class RunTestsFirebaseTestlabAction < Action
-      attr_reader :client_secret_file, :test_console_output
       @client_secret_file = "client-secret.json"
       @test_console_output_file = "instrumentation_output.txt"
+
+      class << self
+        attr_reader :client_secret_file, :test_console_output_file
+      end
 
       def self.run(params)
         UI.message("Starting run_tests_firebase_testlab plugin...")
