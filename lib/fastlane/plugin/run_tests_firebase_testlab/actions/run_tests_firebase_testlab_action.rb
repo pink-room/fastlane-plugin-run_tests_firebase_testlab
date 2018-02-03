@@ -1,22 +1,14 @@
 module Fastlane
   module Actions
-
     class RunTestsFirebaseTestlabAction < Action
+      attr_reader :client_secret_file, :test_console_output
       @client_secret_file = "client-secret.json"
       @test_console_output_file = "instrumentation_output.txt"
-
-      def self.client_secret_file
-        @client_secret_file
-      end
-
-      def self.test_console_output_file
-        @test_console_output_file
-      end
 
       def self.run(params)
         UI.message("Starting run_tests_firebase_testlab plugin...")
 
-        if (params[:gcloud_service_key_file].nil?)
+        if params[:gcloud_service_key_file].nil?
           UI.message("Save Google Cloud credentials.")
           File.open(@client_secret_file, 'w') do |file|
             file.write(ENV["GCLOUD_SERVICE_KEY"])
@@ -44,7 +36,7 @@ module Fastlane
         UI.message("Create firebase directory (if not exists) to store test results.")
         FileUtils.mkdir_p(params[:output_dir])
 
-        if (params[:bucket_url].nil?)
+        if params[:bucket_url].nil?
           UI.message("Parse firebase bucket url.")
           params[:bucket_url] = scrape_bucket_url
           UI.message("bucket: #{params[:bucket_url]}")
@@ -53,7 +45,7 @@ module Fastlane
         UI.message("Downloading instrumentation test results from Firebase TestLab...")
         Action.sh("#{Commands.download_results} #{params[:bucket_url]} #{params[:output_dir]}/")
 
-        if (params[:delete_firebase_files])
+        if params[:delete_firebase_files]
           UI.message("Deleting files from firebase storage...")
           Action.sh("#{Commands.delete_resuls} #{params[:bucket_url]}")
         end
@@ -185,18 +177,17 @@ module Fastlane
         :testing
       end
 
-      private
-
       def self.scrape_bucket_url
         File.open(@test_console_output_file).each do |line|
           url = line.scan(/\[(.*)\]/).last&.first
-          if (not url.nil? and (not url.empty? and url.include?("test-lab-")))
-            splitted_url = url.split("/")
-            length = splitted_url.length
-            return "gs://#{splitted_url[length - 2]}/#{splitted_url[length - 1]}"
-          end
+          next unless !url.nil? and (!url.empty? and url.include?("test-lab-"))
+          splitted_url = url.split("/")
+          length = splitted_url.length
+          return "gs://#{splitted_url[length - 2]}/#{splitted_url[length - 1]}"
         end
       end
+
+      private_class_method :scrape_bucket_url
     end
   end
 end

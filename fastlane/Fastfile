@@ -4,5 +4,5 @@ lane :test do
     model: "Nexus6P",
     version: "27",
     delete_firebase_files: true
-    )
+  )
 end
