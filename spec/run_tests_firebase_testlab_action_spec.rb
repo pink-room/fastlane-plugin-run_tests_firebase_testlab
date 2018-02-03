@@ -8,6 +8,8 @@ describe Fastlane::Actions::RunTestsFirebaseTestlabAction do
     before :each do
       allow(Fastlane::UI).to receive(:message)
 
+      allow(FileUtils).to receive(:mkdir_p)
+
       File.open(test_console_output_file, 'w') { |f| f.write(test_console_output) }
       allow(File).to receive(:open).with(Fastlane::Actions::RunTestsFirebaseTestlabAction.test_console_output_file).and_return(File.open(test_console_output_file))
 
