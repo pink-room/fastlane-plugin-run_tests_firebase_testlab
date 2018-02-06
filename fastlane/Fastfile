@@ -1,3 +1,8 @@
 lane :test do
-  run_tests_firebase_testlab
+  run_tests_firebase_testlab(
+    project_id: "your-firebase-project-id",
+    model: "Nexus6P",
+    version: "27",
+    delete_firebase_files: true
+  )
 end
