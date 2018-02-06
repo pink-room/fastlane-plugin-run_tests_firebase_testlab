@@ -26,7 +26,7 @@ module Fastlane
         UI.message("Authenticate with Google Cloud.")
         Action.sh("#{Commands.auth} --key-file #{@client_secret_file}")
 
-        UI.message("Running instrumentation tests in Firebase TestLab...")
+        UI.message("Running instrumentation tests in Firebase Test Lab...")
         Action.sh("#{Commands.run_tests} "\
                   "--type instrumentation "\
                   "--app #{params[:app_apk]} "\
@@ -45,7 +45,7 @@ module Fastlane
           UI.message("bucket: #{params[:bucket_url]}")
         end
 
-        UI.message("Downloading instrumentation test results from Firebase TestLab...")
+        UI.message("Downloading instrumentation test results from Firebase Test Lab...")
         Action.sh("#{Commands.download_results} #{params[:bucket_url]} #{params[:output_dir]}/")
 
         if params[:delete_firebase_files]
@@ -55,7 +55,7 @@ module Fastlane
       end
 
       def self.description
-        "Runs Android tests in Firebase testlab."
+        "Runs Android tests in Firebase Test Lab."
       end
 
       def self.authors
@@ -65,7 +65,7 @@ module Fastlane
       def self.details
         [
           "Authenticates with Google Cloud.",
-          "Runs tests in Firebase testlab.",
+          "Runs tests in Firebase Test Lab.",
           "Fetches the results to a local directory.",
           "Deletes the results from firebase bucket if wanted."
         ].join("\n")
