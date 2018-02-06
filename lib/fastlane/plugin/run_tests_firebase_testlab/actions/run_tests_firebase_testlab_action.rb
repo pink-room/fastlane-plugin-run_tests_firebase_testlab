@@ -90,7 +90,7 @@ module Fastlane
                                        optional: false),
           FastlaneCore::ConfigItem.new(key: :model,
                                        env_name: "MODEL",
-                                       description: "The device model name to run the tests",
+                                       description: "The device's model on which the tests will be run",
                                        is_string: true,
                                        optional: false),
           FastlaneCore::ConfigItem.new(key: :version,
