@@ -14,10 +14,13 @@ fastlane add_plugin run_tests_firebase_testlab
 
 ## About run_tests_firebase_testlab
 
-Authenticates with Google Cloud.
-Runs Android tests in Firebase testlab.
-Fetches the results to a local directory.
-Deletes the results from firebase bucket if wanted.
+* Authenticates with Google Cloud.
+
+* Runs Android tests in Firebase testlab.
+
+* Fetches the results to a local directory.
+
+* Deletes the results from firebase bucket if wanted.
 
 ## Example
 
