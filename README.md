@@ -37,19 +37,110 @@ run_tests_firebase_testlab(
 
 ### Parameters
 
-- `project_id`: Your Firebase project id. This parameter is necessary.
-- `model`: The device model name to run the tests. This parameter is necessary.
-- `version`: The Android api version of the device. This parameter is necessary.
-- `app_apk`: The path for your app apk. Default: app/build/outputs/apk/debug/app-debug.apk
-- `android_test_apk`: The path for your android test apk. Default: app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
-- `locale`: The locale to test against. Default: en_US
-- `orientation`: The orientation of the device. Default: portrait
-- `timeout`: The max time this test execution can run before it is cancelled. Default: 30m
-- `output_dir`: The directory to save the output results. Default: firebase
-- `bucket_url`: The bucket url where the test results were stored. Default: Parsed automatically from tests output
-- `delete_firebase_files`: A flag to control if the firebase files should be deleted from the bucket or not. Default: false
-- `extra_options`: Extra options that you need to pass to the gcloud command. Default: empty string
-- `gcloud_service_key_file`: File path containing the gcloud auth key. Default: Created from GCLOUD_SERVICE_KEY environment variable
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+<th>Optional</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+
+<tr>
+<td><b>project_id</b></td>
+<td>Your Firebase project id</td>
+<td>false</td>
+<td>-</td>
+</tr>
+
+<tr>
+<td><b>model</b></td>
+<td>The device's model on which the tests will be run</td>
+<td>false</td>
+<td>-</td>
+</tr>
+
+<tr>
+<td><b>version</b></td>
+<td>The Android api version of the device</td>
+<td>false</td>
+<td>-</td>
+</tr>
+
+<tr>
+<td>app_apk</td>
+<td>The path for your app apk</td>
+<td>true</td>
+<td>app/build/outputs/apk/debug/<br>app-debug.apk</td>
+</tr>
+
+<tr>
+<td>android_test_apk</td>
+<td>The path for your android test apk</td>
+<td>true</td>
+<td>app/build/outputs/apk/androidTest/<br>debug/app-debug-androidTest.apk</td>
+</tr>
+
+<tr>
+<td>locale</td>
+<td>The locale to test against</td>
+<td>true</td>
+<td>en_US</td>
+</tr>
+
+<tr>
+<td>orientation</td>
+<td>The orientation of the device</td>
+<td>true</td>
+<td>portrait</td>
+</tr>
+
+<tr>
+<td>timeout</td>
+<td>The max time this test execution can run before it is cancelled</td>
+<td>true</td>
+<td>30m</td>
+</tr>
+
+<tr>
+<td>output_dir</td>
+<td>The directory to save the output results</td>
+<td>true</td>
+<td>firebase</td>
+</tr>
+
+<tr>
+<td>bucket_url</td>
+<td>The bucket url where the test results were stored</td>
+<td>true</td>
+<td>Parsed automatically from tests output</td>
+</tr>
+
+<tr>
+<td>delete_firebase_files</td>
+<td>A flag to control if the firebase files should be deleted from the bucket or not</td>
+<td>true</td>
+<td>false</td>
+</tr>
+
+<tr>
+<td>extra_options</td>
+<td>Extra options that you need to pass to the gcloud command</td>
+<td>true</td>
+<td>empty string</td>
+</tr>
+
+<tr>
+<td>gcloud_service_key_file</td>
+<td>File path containing the gcloud auth key</td>
+<td>true</td>
+<td>Created from GCLOUD_SERVICE_KEY environment variable</td>
+</tr>
+
+</tbody>
+</table>
 
 ## Run tests for this plugin
 
