@@ -27,14 +27,16 @@ module Fastlane
         Action.sh("#{Commands.auth} --key-file #{@client_secret_file}")
 
         UI.message("Running instrumentation tests in Firebase Test Lab...")
-        Action.sh("#{Commands.run_tests} "\
+        Action.sh("mkfifo pipe")
+        Action.sh("tee #{@test_console_output_file} < pipe & "\
+                  "#{Commands.run_tests} "\
                   "--type instrumentation "\
                   "--app #{params[:app_apk]} "\
                   "--test #{params[:android_test_apk]} "\
                   "--device model=#{params[:model]},version=#{params[:version]},locale=#{params[:locale]},orientation=#{params[:orientation]} "\
                   "--timeout #{params[:timeout]} "\
-                  "#{params[:extra_options]} "\
-                  "2>&1 | tee #{@test_console_output_file}")
+                  "#{params[:extra_options]} > pipe 2>&1")
+        Action.sh("rm pipe")
 
         UI.message("Create firebase directory (if not exists) to store test results.")
         FileUtils.mkdir_p(params[:output_dir])
