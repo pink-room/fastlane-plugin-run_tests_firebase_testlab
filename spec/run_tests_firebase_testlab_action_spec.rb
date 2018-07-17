@@ -24,47 +24,47 @@ describe Fastlane::Actions::RunTestsFirebaseTestlabAction do
 
     it 'configures project' do
       generate_params
-      expect_action_sh(4, Fastlane::Commands.config, "project-id")
+      expect_action_sh(6, Fastlane::Commands.config, "project-id")
     end
 
     context 'when no gcloud service file given' do
       it 'authenticates with created file' do
         generate_params
-        expect_action_sh(4, Fastlane::Commands.auth, Fastlane::Actions::RunTestsFirebaseTestlabAction.client_secret_file)
+        expect_action_sh(6, Fastlane::Commands.auth, Fastlane::Actions::RunTestsFirebaseTestlabAction.client_secret_file)
       end
     end
 
     context 'when gcloud service file given' do
       it 'authenticates with the given file' do
         generate_params({ gcloud_service_key_file: "keys.json" })
-        expect_action_sh(4, Fastlane::Commands.auth, "keys.json")
+        expect_action_sh(6, Fastlane::Commands.auth, "keys.json")
       end
     end
 
     context 'when no optional test params given' do
       it 'run tests with default app apk' do
         generate_params
-        expect_action_sh(4, Fastlane::Commands.run_tests, "--app #{@params[:app_apk]}")
+        expect_action_sh(6, Fastlane::Commands.run_tests, "--app #{@params[:app_apk]}")
       end
 
       it 'run tests with default android test apk' do
         generate_params
-        expect_action_sh(4, Fastlane::Commands.run_tests, "--test #{@params[:android_test_apk]}")
+        expect_action_sh(6, Fastlane::Commands.run_tests, "--test #{@params[:android_test_apk]}")
       end
 
       it 'run tests with default locale' do
         generate_params
-        expect_action_sh(4, Fastlane::Commands.run_tests, "locale=#{@params[:locale]}")
+        expect_action_sh(6, Fastlane::Commands.run_tests, "locale=#{@params[:locale]}")
       end
 
       it 'run tests with default orientation' do
         generate_params
-        expect_action_sh(4, Fastlane::Commands.run_tests, "orientation=#{@params[:orientation]}")
+        expect_action_sh(6, Fastlane::Commands.run_tests, "orientation=#{@params[:orientation]}")
       end
 
       it 'run tests with default timeout' do
         generate_params
-        expect_action_sh(4, Fastlane::Commands.run_tests, "--timeout #{@params[:timeout]}")
+        expect_action_sh(6, Fastlane::Commands.run_tests, "--timeout #{@params[:timeout]}")
       end
     end
 
@@ -72,35 +72,35 @@ describe Fastlane::Actions::RunTestsFirebaseTestlabAction do
       before { generate_params({ app_apk: "app.apk", android_test_apk: "android_test.apk", model: "Pixel", version: "22", locale: "pt_PT", orientation: "landscape", timeout: "10m", extra_options: "--format=\"json\"" }) }
 
       it 'run tests with the given app apk' do
-        expect_action_sh(4, Fastlane::Commands.run_tests, "--app app.apk")
+        expect_action_sh(6, Fastlane::Commands.run_tests, "--app app.apk")
       end
 
       it 'run tests with the given android test apk' do
-        expect_action_sh(4, Fastlane::Commands.run_tests, "--test android_test.apk")
+        expect_action_sh(6, Fastlane::Commands.run_tests, "--test android_test.apk")
       end
 
       it 'run tests with the given model' do
-        expect_action_sh(4, Fastlane::Commands.run_tests, "model=Pixel")
+        expect_action_sh(6, Fastlane::Commands.run_tests, "model=Pixel")
       end
 
       it 'run tests with the given version' do
-        expect_action_sh(4, Fastlane::Commands.run_tests, "version=22")
+        expect_action_sh(6, Fastlane::Commands.run_tests, "version=22")
       end
 
       it 'run tests with the given locale' do
-        expect_action_sh(4, Fastlane::Commands.run_tests, "locale=pt_PT")
+        expect_action_sh(6, Fastlane::Commands.run_tests, "locale=pt_PT")
       end
 
       it 'run tests with the given orientation' do
-        expect_action_sh(4, Fastlane::Commands.run_tests, "orientation=landscape")
+        expect_action_sh(6, Fastlane::Commands.run_tests, "orientation=landscape")
       end
 
       it 'run tests with the given timeout' do
-        expect_action_sh(4, Fastlane::Commands.run_tests, "--timeout 10m")
+        expect_action_sh(6, Fastlane::Commands.run_tests, "--timeout 10m")
       end
 
       it 'run tests with the given extra options' do
-        expect_action_sh(4, Fastlane::Commands.run_tests, "--format=\"json\"")
+        expect_action_sh(6, Fastlane::Commands.run_tests, "--format=\"json\"")
       end
     end
 
@@ -121,28 +121,28 @@ describe Fastlane::Actions::RunTestsFirebaseTestlabAction do
     context 'when bucket url not given' do
       it 'download results from url parsed from test command output' do
         generate_params
-        expect_action_sh(4, Fastlane::Commands.download_results, "gs://test-lab-s22/s22")
+        expect_action_sh(6, Fastlane::Commands.download_results, "gs://test-lab-s22/s22")
       end
     end
 
     context 'when bucket url given' do
       it 'downloads files from given url' do
         generate_params({ bucket_url: "gs://test-lab-1/1" })
-        expect_action_sh(4, Fastlane::Commands.download_results, "gs://test-lab-1/1")
+        expect_action_sh(6, Fastlane::Commands.download_results, "gs://test-lab-1/1")
       end
     end
 
     context 'when delete firebase files' do
       it 'deletes firebase files' do
         generate_params({ delete_firebase_files: true })
-        expect_action_sh(5, Fastlane::Commands.delete_resuls, "gs://test-lab-s22/s22")
+        expect_action_sh(7, Fastlane::Commands.delete_resuls, "gs://test-lab-s22/s22")
       end
     end
 
     context 'when do not delete firebase files' do
       it 'do not delete firebase files' do
         generate_params
-        expect_action_sh_not_to(4, Fastlane::Commands.delete_resuls)
+        expect_action_sh_not_to(6, Fastlane::Commands.delete_resuls)
       end
     end
 
