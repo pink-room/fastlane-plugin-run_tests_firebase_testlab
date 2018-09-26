@@ -1,6 +1,7 @@
 module Fastlane
   module Actions
     class RunTestsFirebaseTestlabAction < Action
+      PIPE = "testlab-pipe"
       @client_secret_file = "client-secret.json"
       @test_console_output_file = "instrumentation_output.txt"
 
@@ -27,16 +28,17 @@ module Fastlane
         Action.sh("#{Commands.auth} --key-file #{@client_secret_file}")
 
         UI.message("Running instrumentation tests in Firebase Test Lab...")
-        Action.sh("mkfifo pipe")
-        Action.sh("tee #{@test_console_output_file} < pipe & "\
+        remove_pipe_if_exists
+        Action.sh("mkfifo #{PIPE}")
+        Action.sh("tee #{@test_console_output_file} < #{PIPE} & "\
                   "#{Commands.run_tests} "\
                   "--type instrumentation "\
                   "--app #{params[:app_apk]} "\
                   "--test #{params[:android_test_apk]} "\
                   "--device model=#{params[:model]},version=#{params[:version]},locale=#{params[:locale]},orientation=#{params[:orientation]} "\
                   "--timeout #{params[:timeout]} "\
-                  "#{params[:extra_options]} > pipe 2>&1")
-        Action.sh("rm pipe")
+                  "#{params[:extra_options]} > #{PIPE} 2>&1")
+        remove_pipe_if_exists
 
         UI.message("Create firebase directory (if not exists) to store test results.")
         FileUtils.mkdir_p(params[:output_dir])
@@ -193,6 +195,12 @@ module Fastlane
       end
 
       private_class_method :scrape_bucket_url
+
+      def self.remove_pipe_if_exists
+        Action.sh("rm #{PIPE}") if File.exist?(PIPE)
+      end
+
+      private_class_method :remove_pipe_if_exists
     end
   end
 end
