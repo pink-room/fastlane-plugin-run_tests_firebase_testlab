@@ -4,6 +4,9 @@
 [![Build
 Status](https://travis-ci.org/pink-room/fastlane-plugin-run_tests_firebase_testlab.svg?branch=master)](https://travis-ci.org/pink-room/fastlane-plugin-run_tests_firebase_testlab)
 
+Please, read [this](https://medium.com/pink-room-club/android-continuous-integration-using-fastlane-and-circleci-2-0-part-i-7204e2e7b8b) blog post if you want to know better
+how to use this plugin.
+
 ## Getting Started
 
 This project is a [_fastlane_](https://github.com/fastlane/fastlane) plugin. To get started with `fastlane-plugin-run_tests_firebase_testlab`, add it to your project by running:
