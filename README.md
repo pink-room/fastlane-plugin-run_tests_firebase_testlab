@@ -144,6 +144,13 @@ run_tests_firebase_testlab(
 <td>Created from GCLOUD_SERVICE_KEY environment variable</td>
 </tr>
 
+<tr>
+<td>should_download_from_firebase</td>
+<td>A flag to control if the firebase files should be downloaded from the bucket or not</td>
+<td>Yes</td>
+<td>true</td>
+</tr>
+
 </tbody>
 </table>
 
