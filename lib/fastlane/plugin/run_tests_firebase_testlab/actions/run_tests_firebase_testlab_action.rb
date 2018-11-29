@@ -49,8 +49,10 @@ module Fastlane
           UI.message("bucket: #{params[:bucket_url]}")
         end
 
-        UI.message("Downloading instrumentation test results from Firebase Test Lab...")
-        Action.sh("#{Commands.download_results} #{params[:bucket_url]} #{params[:output_dir]}")
+        if params[:download_results_from_firebase]
+          UI.message("Downloading instrumentation test results from Firebase Test Lab...")
+          Action.sh("#{Commands.download_results} #{params[:bucket_url]} #{params[:output_dir]}")
+        end
 
         if params[:delete_firebase_files]
           UI.message("Deleting files from firebase storage...")
@@ -161,7 +163,13 @@ module Fastlane
                                        description: "File path containing the gcloud auth key. Default: Created from GCLOUD_SERVICE_KEY environment variable",
                                        is_string: true,
                                        optional: true,
-                                       default_value: nil)
+                                       default_value: nil),
+          FastlaneCore::ConfigItem.new(key: :download_results_from_firebase,
+                                       env_name: "SHOULD_DOWNLOAD_FROM_FIREBASE",
+                                       description: "A flag to control if the firebase files should be downloaded from the bucket or not. Default: true",
+                                       is_string: false,
+                                       optional: true,
+                                       default_value: true)
         ]
       end
 

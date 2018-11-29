@@ -156,6 +156,13 @@ describe Fastlane::Actions::RunTestsFirebaseTestlabAction do
       end
     end
 
+    context 'when do not download firebase files' do
+      it 'do not download firebase files' do
+        generate_params({ download_results_from_firebase: false })
+        expect_action_sh_not_to(minimum_sh_actions - 1, Fastlane::Commands.download_results)
+      end
+    end
+
     def generate_params(new_params = {})
       needed_params = { project_id: "project-id", model: "Nexus6P", version: "27" }
       needed_params = needed_params.merge(new_params)
