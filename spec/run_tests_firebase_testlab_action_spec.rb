@@ -8,6 +8,8 @@ describe Fastlane::Actions::RunTestsFirebaseTestlabAction do
 
     before :each do
       allow(Fastlane::UI).to receive(:message)
+      allow(Fastlane::UI).to receive(:user_error!)
+      allow(Fastlane::UI).to receive(:deprecated)
 
       allow(FileUtils).to receive(:mkdir_p)
 
@@ -53,6 +55,16 @@ describe Fastlane::Actions::RunTestsFirebaseTestlabAction do
         expect_action_sh(minimum_sh_actions, Fastlane::Commands.run_tests, "--test #{@params[:android_test_apk]}")
       end
 
+      it 'run tests with given model' do
+        generate_params
+        expect_action_sh(minimum_sh_actions, Fastlane::Commands.run_tests, "model=Nexus6P")
+      end
+
+      it 'run tests with given version' do
+        generate_params
+        expect_action_sh(minimum_sh_actions, Fastlane::Commands.run_tests, "version=27")
+      end
+
       it 'run tests with default locale' do
         generate_params
         expect_action_sh(minimum_sh_actions, Fastlane::Commands.run_tests, "locale=#{@params[:locale]}")
@@ -69,8 +81,34 @@ describe Fastlane::Actions::RunTestsFirebaseTestlabAction do
       end
     end
 
+    context 'when multiple devices given' do
+      before do
+        generate_params({ devices: [{ model: "Nexus6P", version: "27" }, { model: "Pixel", version: "22" }] })
+      end
+
+      it 'run tests with first model' do
+        expect_action_sh(minimum_sh_actions, Fastlane::Commands.run_tests, "model=Nexus6P")
+      end
+
+      it 'run tests with second model' do
+        expect_action_sh(minimum_sh_actions, Fastlane::Commands.run_tests, "model=Pixel")
+      end
+
+      it 'run tests with first version' do
+        expect_action_sh(minimum_sh_actions, Fastlane::Commands.run_tests, "version=27")
+      end
+
+      it 'run tests with second version' do
+        expect_action_sh(minimum_sh_actions, Fastlane::Commands.run_tests, "version=22")
+      end
+    end
+
     context 'when test optional params given' do
-      before { generate_params({ app_apk: "app.apk", android_test_apk: "android_test.apk", model: "Pixel", version: "22", locale: "pt_PT", orientation: "landscape", timeout: "10m", extra_options: "--format=\"json\"" }) }
+      before do
+        generate_params({ app_apk: "app.apk", android_test_apk: "android_test.apk",
+                          devices: [{ model: "Pixel", version: "22", locale: "pt_PT", orientation: "landscape" }],
+                          timeout: "10m", extra_options: "--format=\"json\"" })
+      end
 
       it 'run tests with the given app apk' do
         expect_action_sh(minimum_sh_actions, Fastlane::Commands.run_tests, "--app app.apk")
@@ -163,8 +201,35 @@ describe Fastlane::Actions::RunTestsFirebaseTestlabAction do
       end
     end
 
+    context 'when old and new device parameters given' do
+      it 'crashes with a user error' do
+        error_msg = "You can't use 'devices' param and 'model', 'version', 'locale' and 'orientation' params at the same time"
+        generate_params({ model: "Pixel", version: "22" })
+        expect(Fastlane::UI).to receive(:user_error!).with(error_msg)
+      end
+    end
+
+    context 'when old device parameters given' do
+      before do
+        generate_params({ model: "Pixel", version: "22" })
+      end
+
+      it 'shows a deprecated message' do
+        deprecated_msg = "The 'model', 'version', 'locale' and 'orientation' params are deprecated and will be removed in version 1.0!"
+        expect(Fastlane::UI).to receive(:deprecated).with(deprecated_msg)
+      end
+
+      it 'run tests with the given model' do
+        expect_action_sh(minimum_sh_actions, Fastlane::Commands.run_tests, "model=Pixel")
+      end
+
+      it 'run tests with the given version' do
+        expect_action_sh(minimum_sh_actions, Fastlane::Commands.run_tests, "version=22")
+      end
+    end
+
     def generate_params(new_params = {})
-      needed_params = { project_id: "project-id", model: "Nexus6P", version: "27" }
+      needed_params = { project_id: "project-id", devices: [{ model: "Nexus6P", version: "27" }] }
       needed_params = needed_params.merge(new_params)
       @params = FastlaneCore::Configuration.create(available_options, needed_params)
     end
