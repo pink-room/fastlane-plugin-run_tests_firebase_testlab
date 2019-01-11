@@ -6,13 +6,11 @@ Status](https://travis-ci.org/pink-room/fastlane-plugin-run_tests_firebase_testl
 [![Gem
 Version](https://badge.fury.io/rb/fastlane-plugin-run_tests_firebase_testlab.svg)](https://badge.fury.io/rb/fastlane-plugin-run_tests_firebase_testlab)
 
-Please, read [this](https://medium.com/pink-room-club/android-continuous-integration-using-fastlane-and-circleci-2-0-part-i-7204e2e7b8b) blog post if you want to know better
-how to use this plugin.
+Please, read [this](https://medium.com/pink-room-club/android-continuous-integration-using-fastlane-and-circleci-2-0-part-i-7204e2e7b8b) blog post if you want to know better how to use this plugin.
 
 ## Getting Started
 
 This project is a [_fastlane_](https://github.com/fastlane/fastlane) plugin. To get started with `fastlane-plugin-run_tests_firebase_testlab`, add it to your project by running:
-
 ```bash
 fastlane add_plugin run_tests_firebase_testlab
 ```
@@ -36,8 +34,12 @@ Check out the [example `Fastfile`](fastlane/Fastfile) to see how to use this plu
 ```
 run_tests_firebase_testlab(
     project_id: "your-firebase-project-id",
-    model: "Nexus6P",
-    version: "27")
+    devices: [
+      {
+        model: "Nexus6P",
+        version: "27"
+      }
+    ]);
 ```
 
 ### Parameters
@@ -61,17 +63,38 @@ run_tests_firebase_testlab(
 </tr>
 
 <tr>
-<td><b>model</b></td>
-<td>The device's model on which the tests will be run</td>
+<td><b>devices</b></td>
+<td>A list of devices to test the App on</td>
 <td>No</td>
 <td>-</td>
 </tr>
 
 <tr>
-<td><b>version</b></td>
+<td><b>device[model]</b></td>
+<td>A device model on which the tests will run</td>
+<td>No</td>
+<td>-</td>
+</tr>
+
+<tr>
+<td><b>device[version]</b></td>
 <td>The Android api version of the device</td>
 <td>No</td>
 <td>-</td>
+</tr>
+
+<tr>
+<td>device[locale]</td>
+<td>The locale to test against</td>
+<td>Yes</td>
+<td>en_US</td>
+</tr>
+
+<tr>
+<td>device[orientation]</td>
+<td>The orientation of the device</td>
+<td>Yes</td>
+<td>portrait</td>
 </tr>
 
 <tr>
@@ -86,20 +109,6 @@ run_tests_firebase_testlab(
 <td>The path for your android test apk</td>
 <td>Yes</td>
 <td>app/build/outputs/apk/androidTest/<br>debug/app-debug-androidTest.apk</td>
-</tr>
-
-<tr>
-<td>locale</td>
-<td>The locale to test against</td>
-<td>Yes</td>
-<td>en_US</td>
-</tr>
-
-<tr>
-<td>orientation</td>
-<td>The orientation of the device</td>
-<td>Yes</td>
-<td>portrait</td>
 </tr>
 
 <tr>

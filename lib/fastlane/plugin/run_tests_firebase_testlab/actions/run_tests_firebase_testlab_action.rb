@@ -12,6 +12,8 @@ module Fastlane
       def self.run(params)
         UI.message("Starting run_tests_firebase_testlab plugin...")
 
+        validate_params(params)
+
         if params[:gcloud_service_key_file].nil?
           UI.message("Save Google Cloud credentials.")
           File.open(@client_secret_file, 'w') do |file|
@@ -35,7 +37,7 @@ module Fastlane
                   "--type instrumentation "\
                   "--app #{params[:app_apk]} "\
                   "--test #{params[:android_test_apk]} "\
-                  "--device model=#{params[:model]},version=#{params[:version]},locale=#{params[:locale]},orientation=#{params[:orientation]} "\
+                  "#{create_devices_params(params)}"\
                   "--timeout #{params[:timeout]} "\
                   "#{params[:extra_options]} > #{PIPE} 2>&1")
         remove_pipe_if_exists
@@ -94,16 +96,32 @@ module Fastlane
                                        description: "Your Firebase project id",
                                        is_string: true,
                                        optional: false),
+          FastlaneCore::ConfigItem.new(key: :devices,
+                                       env_name: "DEVICES",
+                                       description: "Devices to test the App on",
+                                       type: Array,
+                                       optional: true,
+                                       verify_block: proc do |devices|
+                                         devices.each do |d|
+                                           if d.class != Hash
+                                             UI.user_error!("Each device must be represented by a Hash object, #{d.class} found")
+                                           end
+                                           check_has_property(d, :model)
+                                           check_has_property(d, :version)
+                                           set_default_property(d, :locale, "en_US")
+                                           set_default_property(d, :orientation, "portrait")
+                                         end
+                                       end),
           FastlaneCore::ConfigItem.new(key: :model,
                                        env_name: "MODEL",
                                        description: "The device's model on which the tests will be run",
                                        is_string: true,
-                                       optional: false),
+                                       optional: true),
           FastlaneCore::ConfigItem.new(key: :version,
                                        env_name: "VERSION",
                                        description: "The Android api version of the device",
                                        is_string: true,
-                                       optional: false),
+                                       optional: true),
           FastlaneCore::ConfigItem.new(key: :app_apk,
                                        env_name: "APP_APK",
                                        description: "The path for your app apk. Default: app/build/outputs/apk/debug/app-debug.apk",
@@ -181,8 +199,12 @@ module Fastlane
         [
           'run_tests_firebase_testlab(
               project_id: "your-firebase-project-id",
-              model: "Nexus6P",
-              version: "27",
+              devices: [
+                {
+                  model: "Nexus6P",
+                  version: "27"
+                }
+              ],
               delete_firebase_files: true
           )'
         ]
@@ -191,6 +213,67 @@ module Fastlane
       def self.category
         :testing
       end
+
+      def self.check_has_property(device, property)
+        UI.user_error!("Each device must have #{property} property") unless device.key?(property)
+      end
+
+      private_class_method :check_has_property
+
+      def self.set_default_property(device, property, default)
+        unless device.key?(property)
+          device[property] = default
+        end
+      end
+
+      private_class_method :set_default_property
+
+      def self.validate_params(params)
+        if has_old_device_params(params)
+          UI.deprecated("The 'model', 'version', 'locale' and 'orientation' params are deprecated and will be removed in version 1.0!")
+          unless params[:devices].nil?
+            UI.user_error!("You can't use 'devices' param and 'model', 'version', "\
+                           "'locale' and 'orientation' params at the same time")
+          end
+        end
+      end
+
+      private_class_method :validate_params
+
+      def self.has_old_device_params(params)
+        !(params[:model].nil? || params[:version].nil? || params[:locale].nil? || params[:orientation].nil?)
+      end
+
+      private_class_method :has_old_device_params
+
+      def self.create_devices_params(params)
+        if has_old_device_params(params)
+          params[:devices] = [
+            {
+              model: params[:model],
+              version: params[:version],
+              locale: params[:locale],
+              orientation: params[:orientation]
+            }
+          ]
+        end
+
+        devices_params = ""
+
+        params[:devices].each do |device|
+          devices_params += create_device_param(device)
+        end
+
+        devices_params
+      end
+
+      private_class_method :create_devices_params
+
+      def self.create_device_param(device)
+        "--device model=#{device[:model]},version=#{device[:version]},locale=#{device[:locale]},orientation=#{device[:orientation]} "
+      end
+
+      private_class_method :create_device_param
 
       def self.scrape_bucket_url
         File.open(@test_console_output_file).each do |line|
