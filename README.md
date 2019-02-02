@@ -154,7 +154,7 @@ run_tests_firebase_testlab(
 </tr>
 
 <tr>
-<td>should_download_from_firebase</td>
+<td>download_results_from_firebase</td>
 <td>A flag to control if the firebase files should be downloaded from the bucket or not</td>
 <td>Yes</td>
 <td>true</td>
