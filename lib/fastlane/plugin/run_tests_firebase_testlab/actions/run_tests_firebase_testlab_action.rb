@@ -32,33 +32,36 @@ module Fastlane
         UI.message("Running instrumentation tests in Firebase Test Lab...")
         remove_pipe_if_exists
         Action.sh("mkfifo #{PIPE}")
-        Action.sh("tee #{@test_console_output_file} < #{PIPE} & "\
-                  "#{Commands.run_tests} "\
-                  "--type instrumentation "\
-                  "--app #{params[:app_apk]} "\
-                  "--test #{params[:android_test_apk]} "\
-                  "#{create_devices_params(params)}"\
-                  "--timeout #{params[:timeout]} "\
-                  "#{params[:extra_options]} > #{PIPE} 2>&1")
-        remove_pipe_if_exists
+        begin
+          Action.sh("tee #{@test_console_output_file} < #{PIPE} & "\
+                    "#{Commands.run_tests} "\
+                    "--type instrumentation "\
+                    "--app #{params[:app_apk]} "\
+                    "--test #{params[:android_test_apk]} "\
+                    "#{create_devices_params(params)}"\
+                    "--timeout #{params[:timeout]} "\
+                    "#{params[:extra_options]} > #{PIPE} 2>&1")
+        ensure
+          remove_pipe_if_exists
 
-        UI.message("Create firebase directory (if not exists) to store test results.")
-        FileUtils.mkdir_p(params[:output_dir])
+          UI.message("Create firebase directory (if not exists) to store test results.")
+          FileUtils.mkdir_p(params[:output_dir])
 
-        if params[:bucket_url].nil?
-          UI.message("Parse firebase bucket url.")
-          params[:bucket_url] = scrape_bucket_url
-          UI.message("bucket: #{params[:bucket_url]}")
-        end
+          if params[:bucket_url].nil?
+            UI.message("Parse firebase bucket url.")
+            params[:bucket_url] = scrape_bucket_url
+            UI.message("bucket: #{params[:bucket_url]}")
+          end
 
-        if params[:download_results_from_firebase]
-          UI.message("Downloading instrumentation test results from Firebase Test Lab...")
-          Action.sh("#{Commands.download_results} #{params[:bucket_url]} #{params[:output_dir]}")
-        end
+          if params[:download_results_from_firebase]
+            UI.message("Downloading instrumentation test results from Firebase Test Lab...")
+            Action.sh("#{Commands.download_results} #{params[:bucket_url]} #{params[:output_dir]}")
+          end
 
-        if params[:delete_firebase_files]
-          UI.message("Deleting files from firebase storage...")
-          Action.sh("#{Commands.delete_resuls} #{params[:bucket_url]}")
+          if params[:delete_firebase_files]
+            UI.message("Deleting files from firebase storage...")
+            Action.sh("#{Commands.delete_resuls} #{params[:bucket_url]}")
+          end
         end
       end
 
