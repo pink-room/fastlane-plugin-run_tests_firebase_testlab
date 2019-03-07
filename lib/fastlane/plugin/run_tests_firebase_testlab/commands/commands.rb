@@ -16,6 +16,14 @@ module Fastlane
       "gsutil -m cp -r"
     end
 
+    def self.download_single_file
+      "gsutil -m cp"
+    end
+
+    def self.list_object
+      "gsutil ls"
+    end
+
     def self.delete_resuls
       "gsutil rm -r"
     end
