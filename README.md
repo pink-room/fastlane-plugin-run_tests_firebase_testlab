@@ -164,7 +164,7 @@ run_tests_firebase_testlab(
 <td>download_file_list</td>
 <td>A list of files that should be downloaded from the bucket. This is an additional parameter for 'download_results_from_firebase'</td>
 <td>Yes</td>
-<td>empty string</td>
+<td>empty array</td>
 </tr>
 
 </tbody>
