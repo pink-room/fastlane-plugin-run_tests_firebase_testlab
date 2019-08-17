@@ -4,7 +4,7 @@ module Fastlane
       PIPE = "testlab-pipe"
       @client_secret_file = "client-secret.json"
       @test_console_output_file = "instrumentation_output.txt"
-      @test_console_folderlist_output_file = "folderlist.txt"
+      @test_console_folder_list_output_file = "folder_list.txt"
 
       class << self
         attr_reader :client_secret_file, :test_console_output_file
@@ -56,34 +56,10 @@ module Fastlane
           end
 
           if params[:download_results_from_firebase]
-            if params[:download_file_list] && !params[:download_file_list].empty?
-              UI.message("Get files at bucket...")
-
-              params[:download_results_from_firebase] = false
-
-              Action.sh("#{Commands.list_object} "\
-                        "#{params[:bucket_url]} "\
-                        "| grep -e '/$' > #{@test_console_folderlist_output_file}")
-
-              bucket_path = params[:bucket_url].delete_prefix("gs://")
-
-              device_folders = []
-              File.open(@test_console_folderlist_output_file).each do |line|
-                folder = line.match(%r{#{bucket_path}/(.*)/$}).captures.first
-                device_folders.push(folder)
-              end
-
-              defined_download_files = params[:download_file_list].split(" ")
-
-              device_folders.each do |devicefolder|
-                defined_download_files.each do |filename|
-                  UI.message("Download file '#{filename}' from '#{devicefolder}' to '#{params[:output_dir]}/#{devicefolder}/#{filename}'...")
-                  Action.sh("#{Commands.download_single_file} #{params[:bucket_url]}/#{devicefolder}/#{filename} #{params[:output_dir]}/#{devicefolder}/#{filename}")
-                end
-              end
+            if params[:download_file_list].length > 0
+              download_files_from_list(params)
             else
-              UI.message("Downloading instrumentation test results from Firebase Test Lab...")
-              Action.sh("#{Commands.download_results} #{params[:bucket_url]} #{params[:output_dir]}")
+              download_all_files(params)
             end
           end
 
@@ -222,10 +198,10 @@ module Fastlane
                                        default_value: true),
           FastlaneCore::ConfigItem.new(key: :download_file_list,
                                        env_name: "DOWNLOAD_FILE_LIST",
-                                       description: "A list of files that should be downloaded from the bucket or not, seperated by space. This is a additional parameter for 'download_results_from_firebase'. Default: empty string",
-                                       is_string: true,
+                                       description: "A list of files that should be downloaded from the bucket. This is an additional parameter for 'download_results_from_firebase'.",
+                                       type: Array,
                                        optional: true,
-                                       default_value: "")
+                                       default_value: [])
         ]
       end
 
@@ -330,6 +306,38 @@ module Fastlane
       end
 
       private_class_method :remove_pipe_if_exists
+
+      def self.download_files_from_list(params)
+        UI.message("Get files from bucket...")
+
+        Action.sh("#{Commands.list_object} "\
+                  "#{params[:bucket_url]} "\
+                  "| grep -e '/$' > #{@test_console_folder_list_output_file}")
+
+        bucket_path = params[:bucket_url].delete_prefix("gs://")
+
+        device_folders = []
+        File.open(@test_console_folder_list_output_file).each do |line|
+          folder = line.match(%r{#{bucket_path}/(.*)/$}).captures.first
+          device_folders.push(folder)
+        end
+
+        device_folders.each do |folder|
+          params[:download_file_list].each do |filename|
+            UI.message("Download file '#{filename}' from '#{folder}' to '#{params[:output_dir]}/#{folder}/#{filename}'...")
+            Action.sh("#{Commands.download_single_file} #{params[:bucket_url]}/#{folder}/#{filename} #{params[:output_dir]}/#{folder}/#{filename}")
+          end
+        end
+      end
+
+      private_class_method :download_files_from_list
+
+      def self.download_all_files(params)
+        UI.message("Downloading instrumentation test results from Firebase Test Lab...")
+        Action.sh("#{Commands.download_results} #{params[:bucket_url]} #{params[:output_dir]}")
+      end
+
+      private_class_method :download_all_files
     end
   end
 end
